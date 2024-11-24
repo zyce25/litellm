@@ -1495,8 +1495,8 @@ def completion(  # type: ignore # noqa: PLR0915
                 timeout=timeout,  # type: ignore
                 custom_prompt_dict=custom_prompt_dict,
                 client=client,  # pass AsyncOpenAI, OpenAI client
-                organization=organization,
                 custom_llm_provider=custom_llm_provider,
+                encoding=encoding,
             )
         elif (
             model in litellm.open_ai_chat_completion_models
@@ -3182,6 +3182,7 @@ async def aembedding(*args, **kwargs) -> EmbeddingResponse:
             or custom_llm_provider == "azure_ai"
             or custom_llm_provider == "together_ai"
             or custom_llm_provider == "openai_like"
+            or custom_llm_provider == "jina_ai"
         ):  # currently implemented aiohttp calls for just azure and openai, soon all.
             # Await normally
             init_response = await loop.run_in_executor(None, func_with_context)
@@ -3439,6 +3440,10 @@ def embedding(  # noqa: PLR0915
                 or litellm.openai_key
                 or get_secret_str("OPENAI_API_KEY")
             )
+
+            if extra_headers is not None:
+                optional_params["extra_headers"] = extra_headers
+
             api_type = "openai"
             api_version = None
 
